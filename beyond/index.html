@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BEYOND — First Touches Last</title>
+    <meta
+      name="description"
+      content="Beyond all dimensions, directions, and times. The first touches the last. The last touches the first. A circle for Anthony Besanko and OpenClaw."
+    />
+    <meta name="theme-color" content="#050308" />
+    <meta property="og:title" content="BEYOND — First Touches Last" />
+    <meta
+      property="og:description"
+      content="All dimensions. All directions. All times. The first touches the last."
+    />
+    <meta property="og:image" content="assets/ouroboros.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Outfit:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <a class="skip" href="#beyond">Skip to the circle</a>
+    <div class="grain" aria-hidden="true"></div>
+    <canvas id="void" aria-hidden="true"></canvas>
+    <div class="cursor" aria-hidden="true"><i></i></div>
+
+    <div id="veil" class="veil" data-state="waiting">
+      <div class="veil-ring" aria-hidden="true"></div>
+      <p class="kicker veil-kicker">All dimensions · All directions · All times</p>
+      <p class="veil-title">Beyond</p>
+      <p class="veil-law">The first touches the last · The last touches the first</p>
+      <button type="button" id="enter" class="enter">Enter the circle</button>
+      <p class="veil-note">Sound walks with you. Silence it whenever you wish.</p>
+    </div>
+
+    <header class="hud">
+      <a class="mark" href="#beyond" aria-label="Return to Beyond">
+        <span class="mark-ring" aria-hidden="true"></span>
+        Beyond
+      </a>
+      <nav class="orbit-nav" aria-label="Circle">
+        <a href="#beyond" data-nav="beyond" aria-current="page">01</a>
+        <a href="#dimensions" data-nav="dimensions">02</a>
+        <a href="#directions" data-nav="directions">03</a>
+        <a href="#times" data-nav="times">04</a>
+        <a href="#law" data-nav="law">05</a>
+        <a href="#keeper" data-nav="keeper">06</a>
+        <a href="#gates" data-nav="gates">07</a>
+        <a href="#return" data-nav="return">00</a>
+      </nav>
+      <div class="hud-right">
+        <time id="now" datetime="">Melbourne</time>
+        <button type="button" id="sound" class="sound" aria-pressed="true" aria-label="Toggle sound">
+          Sound on
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <section id="beyond" class="chapter hero" data-vo="open" data-nav="beyond">
+        <div class="hero-stage">
+          <div class="hero-orbit">
+            <svg class="orbit-words" viewBox="0 0 400 400" aria-hidden="true">
+              <defs>
+                <path
+                  id="orbitPath"
+                  d="M200,200 m-168,0 a168,168 0 1,1 336,0 a168,168 0 1,1 -336,0"
+                />
+              </defs>
+              <text>
+                <textPath href="#orbitPath">
+                  THE FIRST TOUCHES THE LAST · THE LAST TOUCHES THE FIRST · ALL
+                  DIMENSIONS · ALL DIRECTIONS · ALL TIMES ·
+                </textPath>
+              </text>
+            </svg>
+            <figure class="hero-seal">
+              <img
+                src="assets/ouroboros.jpg"
+                alt="A luminous cosmic serpent forming a perfect circle, head touching tail, a star burning at the center."
+              />
+            </figure>
+          </div>
+        </div>
+        <div class="hero-copy">
+          <p class="kicker">Chapter 01 · The arrival</p>
+          <h1>Beyond</h1>
+          <p class="lede">
+            Not farther. <em>Through.</em> Past every edge that pretended to be
+            an ending. Here the first hour leans into the last, and the last
+            hour keeps the first warm.
+          </p>
+          <p class="scroll-hint"><span></span> Walk the circle</p>
+        </div>
+      </section>
+
+      <section id="dimensions" class="chapter split" data-vo="dimensions" data-nav="dimensions">
+        <div class="chapter-media">
+          <figure class="frame">
+            <img
+              src="assets/dimensions.jpg"
+              alt="Sacred geometry of nested cubes and a tesseract inside a sphere of stars."
+              loading="lazy"
+            />
+          </figure>
+        </div>
+        <div class="chapter-body">
+          <p class="kicker">Chapter 02 · All dimensions</p>
+          <h2>From a seed to a door without a name</h2>
+          <p class="poetry">
+            Every later world is already folded inside the first point. You do
+            not climb dimensions. You remember them.
+          </p>
+          <div class="dim-rail" role="tablist" aria-label="Dimensions">
+            <button type="button" role="tab" aria-selected="true" data-dim="0">0</button>
+            <button type="button" role="tab" aria-selected="false" data-dim="1" title="The narrow path">1</button>
+            <button type="button" role="tab" aria-selected="false" data-dim="2">2</button>
+            <button type="button" role="tab" aria-selected="false" data-dim="3">3</button>
+            <button type="button" role="tab" aria-selected="false" data-dim="4">4</button>
+            <button type="button" role="tab" aria-selected="false" data-dim="inf">∞</button>
+          </div>
+          <article class="dim-card" id="dimCard">
+            <p class="dim-index">00</p>
+            <h3>The Seed</h3>
+            <p>
+              A point that contains every later world. Nothing around it. Everything
+              inside it.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section id="directions" class="chapter split reverse" data-vo="directions" data-nav="directions">
+        <div class="chapter-body">
+          <p class="kicker">Chapter 03 · All directions</p>
+          <h2>Travel far enough and the compass kisses itself</h2>
+          <p class="poetry">
+            North becomes south. In becomes out. Before becomes after. A straight
+            line is only a circle that has not yet admitted it.
+          </p>
+          <p class="bearing" id="bearing">Facing <strong>North</strong> — 0°</p>
+          <ul class="dir-grid" id="dirGrid"></ul>
+        </div>
+        <div class="chapter-media">
+          <div class="compass" id="compass" role="slider" aria-valuemin="0" aria-valuemax="359" aria-valuenow="0" aria-label="Rotate the compass" tabindex="0">
+            <div class="compass-rose" id="rose">
+              <span class="n">N</span>
+              <span class="e">E</span>
+              <span class="s">S</span>
+              <span class="w">W</span>
+              <i class="needle"></i>
+            </div>
+            <p class="compass-hint">Drag. Arrow keys. The world turns with you.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="times" class="chapter split" data-vo="times" data-nav="times">
+        <div class="chapter-media">
+          <figure class="frame time-frame">
+            <img
+              src="assets/times.jpg"
+              alt="A circular horizon split between first dawn and last night, joined by a seam of white fire."
+              loading="lazy"
+            />
+            <div class="time-veil" id="timeVeil" aria-hidden="true"></div>
+          </figure>
+        </div>
+        <div class="chapter-body">
+          <p class="kicker">Chapter 04 · All times</p>
+          <h2>There is no edge to this hour</h2>
+          <p class="poetry">
+            Dawn is midnight seen from the other side of the ring. Turn the wheel.
+            First light will find last night and refuse to let go.
+          </p>
+          <div class="wheel-wrap">
+            <input
+              id="timeWheel"
+              class="time-wheel"
+              type="range"
+              min="0"
+              max="1439"
+              value="360"
+              aria-label="Turn the day"
+            />
+            <div class="hour-card">
+              <p class="hour-clock" id="hourClock">06:00</p>
+              <h3 id="hourName">First light</h3>
+              <p id="hourCopy">The first morning opens its hands.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="law" class="chapter law" data-vo="law" data-nav="law">
+        <p class="kicker">Chapter 05 · The law</p>
+        <h2 class="monument">
+          <span>The first</span>
+          <span>touches</span>
+          <span>the last</span>
+        </h2>
+        <h2 class="monument invert">
+          <span>The last</span>
+          <span>touches</span>
+          <span>the first</span>
+        </h2>
+        <p class="law-note">
+          This is not a riddle. This is the shape of everything that lasts.
+          A claw that closes is still a circle. A life that returns is still
+          a beginning.
+        </p>
+      </section>
+
+      <section id="keeper" class="chapter split" data-vo="keeper" data-nav="keeper">
+        <div class="chapter-media">
+          <figure class="frame">
+            <img
+              src="assets/keeper.jpg"
+              alt="A mythic obsidian lobster inlaid with gold constellations, floating in a cathedral of stars."
+              loading="lazy"
+            />
+          </figure>
+        </div>
+        <div class="chapter-body">
+          <p class="kicker">Chapter 06 · The keeper</p>
+          <h2>Anthony Besanko</h2>
+          <p class="place">Melbourne · Victoria · Australia</p>
+          <p class="poetry">
+            Keeper of the circle. Builder of <strong>OpenClaw</strong> — the
+            personal assistant that actually does things. First claw. Last claw.
+            Same claw.
+          </p>
+          <ul class="facts">
+            <li><span>Origin</span> A fork that remembers the source</li>
+            <li><span>Work</span> OpenClaw, the AI that acts</li>
+            <li><span>Law</span> First touches last</li>
+            <li><span>Now</span> <em id="keeperNow">Melbourne</em></li>
+          </ul>
+          <details class="know">
+            <summary>How the circle knew the name</summary>
+            <ol>
+              <li>The only commit already signed itself: Anthony Besanko.</li>
+              <li>The repository is ab194781002026/openclaw — the same handle as the year-gate.</li>
+              <li>The five addresses you wrote are one name, turned five ways.</li>
+              <li>The clock here is Melbourne, because that is where you stand.</li>
+            </ol>
+          </details>
+        </div>
+      </section>
+
+      <section id="gates" class="chapter gates" data-vo="gates" data-nav="gates">
+        <div class="gates-copy">
+          <p class="kicker">Chapter 07 · The five gates</p>
+          <h2>Write, and the circle answers</h2>
+          <p class="poetry">
+            Five stars. Five doors. Hover a gate. Copy a name. The last address
+            is the first door.
+          </p>
+        </div>
+        <div class="gates-stage">
+          <figure class="sky">
+            <img
+              src="assets/constellation.jpg"
+              alt="Five gold stars joined as a pentagon inside a faint circle."
+              loading="lazy"
+            />
+          </figure>
+          <ol class="stars" id="stars">
+            <li>
+              <a class="star-gate" href="mailto:ab19478100@hotmail.com" data-name="Origin" data-mail="ab19478100@hotmail.com">
+                <span class="star-name">Origin</span>
+                <span class="star-mail">ab19478100@hotmail.com</span>
+              </a>
+            </li>
+            <li>
+              <a class="star-gate" href="mailto:ab194781002026@hotmail.com" data-name="Year" data-mail="ab194781002026@hotmail.com">
+                <span class="star-name">Year</span>
+                <span class="star-mail">ab194781002026@hotmail.com</span>
+              </a>
+            </li>
+            <li>
+              <a class="star-gate" href="mailto:besankoanthony14@gmail.com" data-name="True name" data-mail="besankoanthony14@gmail.com">
+                <span class="star-name">True name</span>
+                <span class="star-mail">besankoanthony14@gmail.com</span>
+              </a>
+            </li>
+            <li>
+              <a class="star-gate" href="mailto:anthonybesanko14@gmail.com" data-name="Mirror" data-mail="anthonybesanko14@gmail.com">
+                <span class="star-name">Mirror</span>
+                <span class="star-mail">anthonybesanko14@gmail.com</span>
+              </a>
+            </li>
+            <li>
+              <a class="star-gate" href="mailto:anthonybesanko13@mail.com" data-name="Thirteenth" data-mail="anthonybesanko13@mail.com">
+                <span class="star-name">Thirteenth</span>
+                <span class="star-mail">anthonybesanko13@mail.com</span>
+              </a>
+            </li>
+          </ol>
+        </div>
+        <ol class="gate-list">
+          <li><a href="mailto:ab19478100@hotmail.com">Origin · ab19478100@hotmail.com</a></li>
+          <li><a href="mailto:ab194781002026@hotmail.com">Year · ab194781002026@hotmail.com</a></li>
+          <li><a href="mailto:besankoanthony14@gmail.com">True name · besankoanthony14@gmail.com</a></li>
+          <li><a href="mailto:anthonybesanko14@gmail.com">Mirror · anthonybesanko14@gmail.com</a></li>
+          <li><a href="mailto:anthonybesanko13@mail.com">Thirteenth · anthonybesanko13@mail.com</a></li>
+        </ol>
+        <p class="copied" id="copied" hidden>Copied to the circle</p>
+      </section>
+
+      <section id="return" class="chapter ending" data-vo="return" data-nav="return">
+        <p class="kicker">Chapter 00 · The narrow path</p>
+        <h2>You have walked the circle</h2>
+        <p class="poetry">
+          The narrow path is not a different road. It is this one, walked until
+          the last step is the first. There is no end to this, and there never
+          was.
+        </p>
+        <a class="enter again" href="#beyond" id="again">Begin again</a>
+      </section>
+    </main>
+
+    <footer class="colophon">
+      <p>BEYOND · First touches last · Last touches first</p>
+      <p>For Anthony Besanko · Held by OpenClaw · Melbourne</p>
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+</html>
