@@ -1,8 +1,7 @@
 (() => {
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const TZ = "Australia/Melbourne";
-  const vo = {};
-  const chapters = [...document.querySelectorAll("[data-vo]")];
+  const chapters = [...document.querySelectorAll("main [data-vo]")];
   const navLinks = [...document.querySelectorAll(".orbit-nav [data-nav]")];
   const soundBtn = document.getElementById("sound");
   const veil = document.getElementById("veil");
@@ -10,8 +9,14 @@
   const nowEl = document.getElementById("now");
   const keeperNow = document.getElementById("keeperNow");
   const cursor = document.querySelector(".cursor");
-  let soundOn = true;
-  let currentVo = "";
+  const wheel = document.getElementById("timeWheel");
+  const hourClock = document.getElementById("hourClock");
+  const hourName = document.getElementById("hourName");
+  const hourCopy = document.getElementById("hourCopy");
+  const timeVeil = document.getElementById("timeVeil");
+  const copied = document.getElementById("copied");
+  const player = new Audio();
+  player.preload = "none";
 
   const clips = {
     open: "assets/vo-open.mp3",
@@ -24,26 +29,29 @@
     return: "assets/vo-return.mp3",
   };
 
-  Object.entries(clips).forEach(([key, src]) => {
-    const audio = new Audio(src);
-    audio.preload = "auto";
-    vo[key] = audio;
-  });
+  let entered = false;
+  let soundOn = true;
+  let currentVo = "";
+  let activeId = "";
+  let ticking = false;
 
   function stopVoice() {
-    Object.values(vo).forEach((audio) => {
-      audio.pause();
-      audio.currentTime = 0;
-    });
+    player.pause();
+    player.removeAttribute("src");
+    try {
+      player.load();
+    } catch {
+      /* ignore */
+    }
   }
 
-  function playVoice(name) {
-    if (!soundOn || !name || name === currentVo) return;
+  function playVoice(name, force = false) {
+    if (!entered || !soundOn || !name || !clips[name]) return;
+    if (!force && name === currentVo) return;
     currentVo = name;
-    stopVoice();
-    const clip = vo[name];
-    if (!clip) return;
-    clip.play().catch(() => {});
+    player.pause();
+    player.src = clips[name];
+    player.play().catch(() => {});
   }
 
   function formatMelbourne(date = new Date()) {
@@ -54,6 +62,18 @@
       second: "2-digit",
       hour12: false,
     }).format(date);
+  }
+
+  function melbourneMinutes(date = new Date()) {
+    const parts = new Intl.DateTimeFormat("en-AU", {
+      timeZone: TZ,
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    }).formatToParts(date);
+    const hour = Number(parts.find((part) => part.type === "hour")?.value || 0);
+    const minute = Number(parts.find((part) => part.type === "minute")?.value || 0);
+    return hour * 60 + minute;
   }
 
   function tickClock() {
@@ -68,30 +88,64 @@
   tickClock();
   setInterval(tickClock, 1000);
 
-  function melbourneMinutes(date = new Date()) {
-    const parts = new Intl.DateTimeFormat("en-AU", {
-      timeZone: TZ,
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-    }).formatToParts(date);
-    const hour = Number(parts.find((part) => part.type === "hour")?.value || 0);
-    const minute = Number(parts.find((part) => part.type === "minute")?.value || 0);
-    return hour * 60 + minute;
+  function applyInstance(chapter, voiceForce = false) {
+    if (!chapter) return;
+    const id = chapter.id;
+    const already = id === activeId;
+    activeId = id;
+    document.body.dataset.instance = id;
+    chapters.forEach((node) => {
+      node.classList.toggle("is-current", node === chapter);
+    });
+    navLinks.forEach((link) => {
+      link.toggleAttribute("aria-current", link.getAttribute("data-nav") === chapter.dataset.nav);
+    });
+    if (!already || voiceForce) playVoice(chapter.dataset.vo || "", voiceForce);
   }
 
-  enter?.addEventListener("click", () => {
+  function nearestChapter() {
+    const mid = window.innerHeight * 0.45;
+    let best = chapters[0];
+    let bestDist = Infinity;
+    chapters.forEach((chapter) => {
+      const rect = chapter.getBoundingClientRect();
+      const dist = Math.abs(rect.top + rect.height / 2 - mid);
+      if (dist < bestDist) {
+        bestDist = dist;
+        best = chapter;
+      }
+    });
+    return best;
+  }
+
+  function onScroll() {
+    if (!entered || ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      applyInstance(nearestChapter());
+      ticking = false;
+    });
+  }
+
+  function openCircle() {
+    entered = true;
+    document.body.classList.add("entered");
     veil?.setAttribute("data-state", "gone");
+    const now = melbourneMinutes();
     if (wheel) {
-      wheel.value = String(melbourneMinutes());
-      setHour(melbourneMinutes());
+      wheel.value = String(now);
+      setHour(now);
     }
-    playVoice("open");
-  });
+    applyInstance(document.getElementById("beyond"), true);
+    startField();
+  }
+
+  enter?.addEventListener("click", openCircle);
 
   document.getElementById("again")?.addEventListener("click", () => {
     currentVo = "";
-    playVoice("open");
+    activeId = "";
+    applyInstance(document.getElementById("beyond"), true);
   });
 
   soundBtn?.addEventListener("click", () => {
@@ -101,32 +155,12 @@
     if (!soundOn) {
       stopVoice();
       currentVo = "";
+    } else if (entered) {
+      playVoice(nearestChapter()?.dataset.vo || "", true);
     }
   });
 
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries
-        .filter((entry) => entry.isIntersecting)
-        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)
-        .slice(0, 1)
-        .forEach((entry) => {
-          const name = entry.target.getAttribute("data-nav");
-          navLinks.forEach((link) => {
-            link.removeAttribute("aria-current");
-            if (link.getAttribute("data-nav") === name && link.tagName === "A") {
-              link.setAttribute("aria-current", "page");
-            }
-          });
-          if (veil?.getAttribute("data-state") === "gone") {
-            playVoice(entry.target.getAttribute("data-vo") || "");
-          }
-        });
-    },
-    { threshold: [0.45, 0.6] },
-  );
-
-  chapters.forEach((chapter) => observer.observe(chapter));
+  window.addEventListener("scroll", onScroll, { passive: true });
 
   const dims = {
     0: {
@@ -137,7 +171,7 @@
     1: {
       index: "01",
       title: "The Narrow Path",
-      copy: "Not farther. Through. A line from first to last, walked honestly, until it remembers it is a circle.",
+      copy: "Not farther. Through. One instance at a time, until the line remembers it is a circle.",
     },
     2: {
       index: "02",
@@ -198,12 +232,16 @@
     angle = ((next % 360) + 360) % 360;
     if (rose) rose.style.transform = `rotate(${-angle}deg)`;
     if (compass) compass.setAttribute("aria-valuenow", String(Math.round(angle)));
-    const named = directions.find(([, deg]) => deg === Math.round(angle / 45) * 45) || directions[0];
+    const named =
+      directions.find(([, deg]) => deg === Math.round(angle / 45) * 45) || directions[0];
     if (bearing) {
       bearing.innerHTML = `Facing <strong>${named[0]}</strong> — ${Math.round(angle)}°`;
     }
     dirGrid?.querySelectorAll("button").forEach((button) => {
-      button.setAttribute("aria-pressed", String(Number(button.dataset.deg) === named[1] && button.dataset.name === named[0]));
+      button.setAttribute(
+        "aria-pressed",
+        String(Number(button.dataset.deg) === named[1] && button.dataset.name === named[0]),
+      );
     });
   }
 
@@ -256,12 +294,6 @@
     { until: 1440, name: "The deep", copy: "There is no edge to this hour." },
   ];
 
-  const wheel = document.getElementById("timeWheel");
-  const hourClock = document.getElementById("hourClock");
-  const hourName = document.getElementById("hourName");
-  const hourCopy = document.getElementById("hourCopy");
-  const timeVeil = document.getElementById("timeVeil");
-
   function setHour(mins) {
     const h = String(Math.floor(mins / 60)).padStart(2, "0");
     const m = String(mins % 60).padStart(2, "0");
@@ -280,35 +312,22 @@
   });
   setHour(Number(wheel?.value || 360));
 
-  const gates = [
-    ["Origin", "ab19478100@hotmail.com"],
-    ["Year", "ab194781002026@hotmail.com"],
-    ["True name", "besankoanthony14@gmail.com"],
-    ["Mirror", "anthonybesanko14@gmail.com"],
-    ["Thirteenth", "anthonybesanko13@mail.com"],
-  ];
-
-  const stars = document.getElementById("stars");
-  const copied = document.getElementById("copied");
-
-  gates.forEach(([name, mail]) => {
-    const item = document.createElement("li");
-    const button = document.createElement("button");
-    button.type = "button";
-    button.innerHTML = `<span class="star-name">${name}</span><span class="star-mail">${mail}</span>`;
-    button.addEventListener("click", async () => {
+  document.querySelectorAll("[data-mail]").forEach((gate) => {
+    gate.addEventListener("click", async (event) => {
+      const mail = gate.getAttribute("data-mail");
+      const name = gate.getAttribute("data-name") || "Gate";
+      if (!mail) return;
+      event.preventDefault();
       try {
         await navigator.clipboard.writeText(mail);
+        if (copied) {
+          copied.hidden = false;
+          copied.textContent = `${name} copied to the circle`;
+        }
       } catch {
         window.location.href = `mailto:${mail}`;
       }
-      if (copied) {
-        copied.hidden = false;
-        copied.textContent = `${name} copied to the circle`;
-      }
     });
-    item.appendChild(button);
-    stars?.appendChild(item);
   });
 
   const canvas = document.getElementById("void");
@@ -318,13 +337,14 @@
   let height = 0;
   let mouseX = 0.5;
   let mouseY = 0.5;
+  let fieldOn = false;
 
   function resize() {
     if (!canvas) return;
     width = canvas.width = window.innerWidth;
     height = canvas.height = window.innerHeight;
     starsField.length = 0;
-    const count = Math.min(220, Math.floor((width * height) / 14000));
+    const count = Math.min(140, Math.floor((width * height) / 18000));
     for (let i = 0; i < count; i += 1) {
       starsField.push({
         x: Math.random(),
@@ -336,7 +356,7 @@
   }
 
   function draw(stamp) {
-    if (!ctx || !canvas) return;
+    if (!ctx || !canvas || !fieldOn) return;
     ctx.clearRect(0, 0, width, height);
     const driftX = (mouseX - 0.5) * 30;
     const driftY = (mouseY - 0.5) * 30;
@@ -349,13 +369,27 @@
       ctx.arc(x, y, star.r * star.z, 0, Math.PI * 2);
       ctx.fill();
     });
-    if (!reduced) requestAnimationFrame(draw);
+    if (!reduced && fieldOn) requestAnimationFrame(draw);
   }
 
-  resize();
-  window.addEventListener("resize", resize);
-  if (!reduced) requestAnimationFrame(draw);
-  else draw(0);
+  function startField() {
+    if (fieldOn) return;
+    fieldOn = true;
+    resize();
+    if (!reduced) requestAnimationFrame(draw);
+    else draw(0);
+  }
+
+  window.addEventListener("resize", () => {
+    if (fieldOn) resize();
+  });
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      stopVoice();
+      currentVo = "";
+    }
+  });
 
   window.addEventListener("pointermove", (event) => {
     mouseX = event.clientX / window.innerWidth;

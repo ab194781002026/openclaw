@@ -24,6 +24,7 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-snap-type: y proximity;
 }
 
 html,
@@ -378,6 +379,21 @@ main {
   position: relative;
   min-height: 100svh;
   padding: 7.5rem 6vw 5rem;
+  scroll-snap-align: start;
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 100svh;
+}
+
+.chapter.hero {
+  content-visibility: visible;
+}
+
+body:not(.entered) main .chapter:not(#beyond) {
+  content-visibility: hidden;
+}
+
+.chapter.is-current {
+  isolation: isolate;
 }
 
 .hero {
